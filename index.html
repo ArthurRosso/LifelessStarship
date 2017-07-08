@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>Noname Game</title>
+    <title>Lifeless Starship</title>
     <style>* { padding: 0; margin: 0; }</style>
     <script src="assets/phaser.min.js"></script>
 </head>
@@ -12,6 +12,9 @@
 
     var player;
     var cursors;
+    var weapon;
+    var bullet;
+    var fireButton;
 
     function preload() {
         game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
@@ -19,6 +22,8 @@
         game.scale.pageAlignVertically = true;
         game.stage.backgroundColor = '#000';
         game.load.image('player', 'assets/sprites/player.png');
+        game.load.image('weapon', 'assets/sprites/weapon.png');
+        game.load.image('bullet', 'assets/sprites/bullet.png');
     }
     function create() {
         //  Create the player
@@ -32,24 +37,61 @@
 
         //  Set game cursos, it's how the player will move
         cursors = game.input.keyboard.createCursorKeys();
+
+        //  Create weapon
+        weapon = game.add.sprite(60, 60, 'weapon');
+
+        //  Tell the Weapon to track the 'player' Sprite
+        //  The position (more or less the middle of player)
+        //  But the 'true' argument tells the weapon to track player
+        //  weapon.trackSprite(player,50, 40, true);
+
+        //  Creates 30 bullets, using the 'bullet' graphic
+        bullet = game.add.weapon(30, 'bullet');
+
+        //  The bullet will be automatically killed when it leaves the world bounds
+        bullet.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS;
+
+        //  The speed at which the bullet is fired
+        bullet.bulletSpeed = 600;
+
+        //  Speed-up the rate of fire, allowing them to shoot 1 bullet every 60ms
+        bullet.fireRate = 100;
+
+        //  Tell the bullet to track the 'weapon' Sprite
+        //  With no offsets from the position
+        //  But the 'true' argument tells the bullet to track in the weapon
+        bullet.trackSprite(weapon, 30, 30, true);
+
+        //  Set fire button, it's how the player will shot
+        fireButton = this.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
     }
     function update() {
         if (cursors.left.isDown)
         {
             player.x -= 2;
+            weapon.x = player.x + 10;
         }
         else if (cursors.right.isDown)
         {
             player.x += 2;
+            weapon.x = player.x + 10;
         }
 
         if (cursors.up.isDown)
         {
             player.y -= 2;
+            weapon.y = player.y + 10;
         }
         else if (cursors.down.isDown)
         {
             player.y += 2;
+            weapon.y = player.y + 10;
+        }
+
+        if (fireButton.isDown)
+        {
+            bullet.fire();
         }
     }
 
