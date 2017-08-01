@@ -11,7 +11,11 @@
     var game = new Phaser.Game(800, 400, Phaser.CANVAS, null, {preload: preload, create: create, update: update});
 
     var player;
-    var cursors;
+    var upKey;
+    var downKey;
+    var leftKey;
+    var rightKey;
+    var enemy;
     var weapon;
     var bullet;
 
@@ -23,6 +27,7 @@
         game.load.image('player', 'assets/sprites/player.png');
         game.load.image('weapon', 'assets/sprites/weapon.png');
         game.load.image('bullet', 'assets/sprites/bullet.png');
+        game.load.image('enemy', 'assets/sprites/enemy1.png');
     }
     function create() {
         //  Create the player
@@ -35,7 +40,10 @@
         player.body.collideWorldBounds = true;
 
         //  Set game cursos, it's how the player will move
-        cursors = game.input.keyboard.createCursorKeys();
+        upKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
+        downKey = game.input.keyboard.addKey(Phaser.Keyboard.S);
+        leftKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
+        rightKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
 
         //  Create weapon
         weapon = game.add.sprite(80, 80, 'weapon');
@@ -67,28 +75,35 @@
 
         // Mouse capture
         game.input.mouse.capture = true;
-    }
-    function update() {
-        if (cursors.left.isDown)
-        {
-            player.x -= 2;
-            weapon.x = player.x + 30;
-        }
-        else if (cursors.right.isDown)
-        {
-            player.x += 2;
-            weapon.x = player.x + 30;
-        }
 
-        if (cursors.up.isDown)
+        //  Create the enemy
+        enemy = game.add.sprite(700, 50, 'enemy');
+
+        //  Set the physics of the enemy
+        game.physics.enable(enemy, Phaser.Physics.ARCADE);
+    }
+    
+    function update() {
+        if (upKey.isDown)
         {
             player.y -= 2;
             weapon.y = player.y + 30;
         }
-        else if (cursors.down.isDown)
+        else if (downKey.isDown)
         {
             player.y += 2;
             weapon.y = player.y + 30;
+        }
+
+        if (leftKey.isDown)
+        {
+            player.x -= 2;
+            weapon.x = player.x + 30;
+        }
+        else if (rightKey.isDown)
+        {
+            player.x += 2;
+            weapon.x = player.x + 30;
         }
 
         weapon.rotation = game.physics.arcade.angleToPointer(weapon);
@@ -98,6 +113,8 @@
             //  Boom!
             bullet.fire();
         }
+
+        //game.physics.moveToObject(enemy, player);
     }
 
 </script>
